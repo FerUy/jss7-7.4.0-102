@@ -41,7 +41,7 @@ Read [the instructions](https://github.com/RestComm/jss7/wiki/Build-jSS7-from-So
 *  SMSC Gateway https://github.com/RestComm/smscgateway
 *  USSD Gateway https://github.com/RestComm/ussdgateway
 *  EIR https://github.com/RestComm/jeir/
-*  GMLC https://github.com/RestComm/gmlc/
+*  GMLC https://github.com/FerUy/restcomm-gmlc
 *  JAIN SLEE Resource Adaptors https://github.com/RestComm/jain-slee.ss7
 *  MMSC https://github.com/RestComm/mmscgateway
 

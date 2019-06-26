@@ -131,7 +131,8 @@ import java.util.Random;
 
 /**
  *
- * @author sergey vetyutnev
+ *  @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ *  @author sergey vetyutnev
  *
  */
 public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBean, Stoppable, MAPDialogListener, MAPServiceMobilityListener {
@@ -365,7 +366,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                         if (ri.getRequestedDomain() == null || ri.getRequestedDomain() == DomainType.csDomain) {
                             mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,NumberingPlan.ISDN, mscAddress);
                             vlrNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                                    NumberingPlan.ISDN, vlrAddress);
+                                NumberingPlan.ISDN, vlrAddress);
                             int natureOfAddressIndicator = 4;
                             String locationNumberAddressDigits= "819203961904";
                             int numberingPlanIndicator = 1;
@@ -384,8 +385,11 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                             eUtranCgi = new EUtranCgiImpl(lteCgi);
                             byte[] trackinAreaId = hexStringToByteArray("3732013935");
                             taId = new TAIdImpl(trackinAreaId);
-                            byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-                            DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
+                            //byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
+                            //DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
+                            String mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+                            byte[] mme = mmneNameStr.getBytes();
+                            DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
                             byte[] lsaId = {49, 51, 50};
                             LSAIdentity selectedLSAId = new LSAIdentityImpl(lsaId);
                             userCSGInformation = null;
@@ -399,8 +403,8 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                             locationInformationEPS = new LocationInformationEPSImpl(eUtranCgi, taId, extensionContainer, geographicalInformation,
                                 geodeticInformation, currentLocationRetrieved, ageOfLocationInformation, mmeName);
                             locationInformation = mapProvider.getMAPParameterFactory().createLocationInformation(ageOfLocationInformation, geographicalInformation,
-                                    vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
-                                    currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
+                                vlrNumber, locationNumberMap, cellGlobalIdOrServiceAreaIdOrLAI, extensionContainer, selectedLSAId, mscNumber, geodeticInformation,
+                                currentLocationRetrieved, saiPresent, locationInformationEPS, userCSGInformation);
                         } else {
                             mcc = 748;
                             mnc = 23;
@@ -415,12 +419,12 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                             byte[] raId = hexStringToByteArray("47f810393532");
                             routeingAreaIdentity = new RAIdentityImpl(raId);
                             sgsnNumber = mapProvider.getMAPParameterFactory().createISDNAddressString(AddressNature.international_number,
-                                    NumberingPlan.ISDN, sgsnAddress);
+                                NumberingPlan.ISDN, sgsnAddress);
                             byte[] lsaId = {49, 51, 49};
                             selectedLSAIdentity = new LSAIdentityImpl(lsaId);
                             locationInformationGPRS = mapProvider.getMAPParameterFactory().createLocationInformationGPRS(cellGlobalIdOrServiceAreaIdOrLAI,
-                                    routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAIdentity, extensionContainer, saiPresent, geodeticInformation,
-                                    currentLocationRetrieved, ageOfLocationInformation);
+                                routeingAreaIdentity, geographicalInformation, sgsnNumber, selectedLSAIdentity, extensionContainer, saiPresent, geodeticInformation,
+                                currentLocationRetrieved, ageOfLocationInformation);
                         }
                     }
 
@@ -445,7 +449,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
 
                     if (ri.getMsClassmark()) {
                         if (ri.getRequestedDomain() == null || ri.getRequestedDomain() == DomainType.csDomain) {
-                            byte[] classmark = {48, 48, 51};
+                            byte[] classmark = {57, 58, 82};
                             msClassmark2 = mapProvider.getMAPParameterFactory().createMSClassmark2(classmark);
                         } else {
                             byte[] mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");
@@ -575,7 +579,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                     }
 
                     SubscriberInfo subscriberInfo = mapProvider.getMAPParameterFactory().createSubscriberInfo(locationInformation, subscriberState, extensionContainer,
-                            locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes);
+                        locationInformationGPRS, psSubscriberState, imei, msClassmark2, gprsMSClass, mnpInfoRes);
 
                     curDialog.addAnyTimeInterrogationResponse(invokeId, subscriberInfo, extensionContainer);
 
@@ -591,7 +595,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
                     // curDialog.abort(mapUserAbortChoice);
                     // return;
                     mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageUnknownSubscriber(null,
-                            UnknownSubscriberDiagnostic.imsiUnknown);
+                        UnknownSubscriberDiagnostic.imsiUnknown);
 
                     curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
@@ -602,7 +606,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
 
                 case ATIReaction.VAL_DATA_MISSING:
                     mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageExtensionContainer(
-                            (long) MAPErrorCode.dataMissing, null);
+                        (long) MAPErrorCode.dataMissing, null);
                     curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
                     this.countErrSent++;
@@ -612,7 +616,7 @@ public class TestAtiServerMan extends TesterBase implements TestAtiServerManMBea
 
                 case ATIReaction.VAL_ERROR_SYSTEM_FAILURE:
                     mapErrorMessage = mapProvider.getMAPErrorMessageFactory().createMAPErrorMessageSystemFailure(
-                            (long) curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
+                        (long) curDialog.getApplicationContext().getApplicationContextVersion().getVersion(), NetworkResource.hlr, null, null);
                     curDialog.sendErrorComponent(invokeId, mapErrorMessage);
 
                     this.countErrSent++;

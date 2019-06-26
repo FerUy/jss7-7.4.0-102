@@ -1,8 +1,10 @@
-package org.mobicents.protocols.ss7.tools.simulator.tests.lcs;
+package org.mobicents.protocols.ss7.map.service.lsm;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 import org.mobicents.protocols.ss7.map.api.MAPException;
+import org.mobicents.protocols.ss7.map.api.service.lsm.EllipsoidPoint;
+import org.mobicents.protocols.ss7.map.api.service.lsm.Polygon;
 import org.mobicents.protocols.ss7.map.primitives.OctetStringBase;
 import org.mobicents.protocols.ss7.map.service.mobility.subscriberInformation.GeographicalInformationImpl;
 
@@ -35,8 +37,8 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
         this.data[0] |= (polygon.length & 0x0F);
 
         for (int position = 0; position < polygon.length; position++) {
-            GeographicalInformationImpl.encodeLatitude(this.data, 1 + position * 3, polygon[position].latitude);
-            GeographicalInformationImpl.encodeLongitude(this.data, 1 + position * 3 + 3, polygon[position].longitude);
+            GeographicalInformationImpl.encodeLatitude(this.data, 1 + 2 * position * 3, polygon[position].getLatitude());
+            GeographicalInformationImpl.encodeLongitude(this.data, 1 + 2 * position * 3 + 3, polygon[position].getLongitude());
         }
     }
 
@@ -52,8 +54,8 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
 
         if (position < numberOfPoints) {
 
-            double latitude = GeographicalInformationImpl.decodeLatitude(this.data, 1 + position * 3);
-            double longitude = GeographicalInformationImpl.decodeLongitude(this.data, 1 + position * 3 + 3);
+            double latitude = GeographicalInformationImpl.decodeLatitude(this.data, 1 + 2 * position * 3);
+            double longitude = GeographicalInformationImpl.decodeLongitude(this.data, 1 + 2 * position * 3 + 3);
 
             ellipsoidPoint = new EllipsoidPoint(latitude, longitude);
         }
@@ -71,8 +73,8 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
         sb.append(numberOfPoints);
         for (int position = 0; position < numberOfPoints; position++) {
             EllipsoidPoint ellipsoidPoint = getEllipsoidPoint(position);
-            sb.append(String.format(", Point%d_lat=%f, ", position, ellipsoidPoint.latitude));
-            sb.append(String.format("Point%d_lat=%f", position, ellipsoidPoint.longitude));
+            sb.append(String.format(", Point%d_lat=%f, ", position, ellipsoidPoint.getLatitude()));
+            sb.append(String.format("Point%d_lat=%f", position, ellipsoidPoint.getLongitude()));
         }
         sb.append("]");
 

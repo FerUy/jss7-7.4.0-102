@@ -96,7 +96,7 @@ public class TestLcsServerConfigurationData {
   private String numberingPlan = "1";
   private String mlcNumber = "5980482910";
   private String imsi = "748026871012345";
-  private String lmsi = "50574953";
+  private String lmsi = "2915";
   private String networkNodeNumber = "598048";
   private String msisdn = "59899077937";
   private String imei = "354449063537030";
@@ -123,12 +123,12 @@ public class TestLcsServerConfigurationData {
   private Double offsetAngle = 20.0;
   private Double includedAngle = 20.0;
   private ExtGeographicalInformation locationEstimate;
-  private Integer ageOfLocationEstimate = 1;
+  private Integer ageOfLocationEstimate = 0;
 
   {
     try {
       locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis,
-              uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
+          uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
     } catch (MAPException e) {
       e.printStackTrace();
     }

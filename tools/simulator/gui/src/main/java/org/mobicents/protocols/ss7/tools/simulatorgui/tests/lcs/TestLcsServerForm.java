@@ -40,7 +40,6 @@ import org.mobicents.protocols.ss7.tools.simulatorgui.TestingForm;
 
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
- * @author <a href="mailto:falonso@csc.om"> Fernando Alonso </a>
  */
 public class TestLcsServerForm extends TestingForm {
 
@@ -78,13 +77,23 @@ public class TestLcsServerForm extends TestingForm {
         gbc_panel_btn.gridy = 3;
         panel.add(panel_btn, gbc_panel_btn);
 
-        JButton btnSubscriberLocationReportRequest = new JButton("SubscriberLocationReportRequest");
-        btnSubscriberLocationReportRequest.setBounds(0, 5, 249, 25);
-        panel_btn.add(btnSubscriberLocationReportRequest);
+        JButton btnSubscriberLocationReportRequest1 = new JButton("SubscriberLocationReportRequest (MT-LR)");
+        btnSubscriberLocationReportRequest1.setBounds(0, 5, 350, 25);
+        panel_btn.add(btnSubscriberLocationReportRequest1);
 
-        btnSubscriberLocationReportRequest.addActionListener(new ActionListener() {
+        btnSubscriberLocationReportRequest1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                subscriberLocationReportRequest();
+                subscriberLocationReportRequestwRefNum();
+            }
+        });
+
+        JButton btnSubscriberLocationReportRequest2 = new JButton("SubscriberLocationReportRequest");
+        btnSubscriberLocationReportRequest2.setBounds(0, 35, 350, 25);
+        panel_btn.add(btnSubscriberLocationReportRequest2);
+
+        btnSubscriberLocationReportRequest2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                subscriberLocationReportRequestnoRefNum();
             }
         });
 
@@ -127,9 +136,15 @@ public class TestLcsServerForm extends TestingForm {
         this.mapLcsServer = mapLcsServer;
     }
 
-    private void subscriberLocationReportRequest() {
+    private void subscriberLocationReportRequestwRefNum() {
         this.lbMessage.setText("");
-        String res = this.mapLcsServer.performSubscriberLocationReportRequest();
+        String res = this.mapLcsServer.performSubscriberLocationReportRequest(true);
+        this.lbResult.setText(res);
+    }
+
+    private void subscriberLocationReportRequestnoRefNum() {
+        this.lbMessage.setText("");
+        String res = this.mapLcsServer.performSubscriberLocationReportRequest(false);
         this.lbResult.setText(res);
     }
 

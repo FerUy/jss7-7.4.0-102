@@ -1,7 +1,10 @@
-package org.mobicents.protocols.ss7.tools.simulator.tests.lcs;
+package org.mobicents.protocols.ss7.map.api.service.lsm;
 
 import java.io.Serializable;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public interface Polygon extends Serializable {
 
     byte[] getData();
@@ -11,3 +14,4 @@ public interface Polygon extends Serializable {
     EllipsoidPoint getEllipsoidPoint(int position);
 
 }
+

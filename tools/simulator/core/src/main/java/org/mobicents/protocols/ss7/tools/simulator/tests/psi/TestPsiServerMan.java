@@ -361,17 +361,17 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
     IMSI imsi = new IMSIImpl("124356871012345");
 
     String nnnAddress = "5982123007";
-    ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-            NumberingPlan.ISDN, nnnAddress);
+    ISDNAddressString networkNodeNumber = new ISDNAddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, nnnAddress);
 
-    byte[] lmsiByte = {50, 57, 49, 53};
+    byte[] lmsiByte = {26, (byte) 192, (byte) 137, 3};
     LMSI lmsi = new LMSIImpl(lmsiByte);
     MAPExtensionContainer mapExtensionContainer = null;
     AdditionalNumber additionalNumber = null;
     boolean mwdSet = false;
-    LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer, false, additionalNumber);
-    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN="
-            +locationInfoWithLMSI.getNetworkNodeNumber().getAddress()+ ", IMSI="+imsi.getData()+ ", LMSI="+lmsi.getData().toString());
+    LocationInfoWithLMSI locationInfoWithLMSI  = mapProvider.getMAPParameterFactory().createLocationInfoWithLMSI(networkNodeNumber, lmsi, mapExtensionContainer,
+        false, additionalNumber);
+    logger.info("LocationInfoWithLMSI for onSendRoutingInfoForSMRequest: NNN=" +locationInfoWithLMSI.getNetworkNodeNumber().getAddress()+
+        ", IMSI="+imsi.getData()+ ", " + "LMSI="+lmsi.getData().toString());
 
     try {
 
@@ -688,8 +688,11 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
               eUtranCgi = new EUtranCgiImpl(lteCgi);
               byte[] trackinAreaId = hexStringToByteArray("3732013935");
               taId = new TAIdImpl(trackinAreaId);
-              byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
-              DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
+              //byte[] mmeNom = {77, 77, 69, 55, 52, 56, 48, 48, 48, 49};
+              //DiameterIdentity mmeName = new DiameterIdentityImpl(mmeNom);
+              String mmneNameStr = "mmec03.mmeer3000.mme.epc.mnc002.mcc748.3gppnetwork.org";
+              byte[] mme = mmneNameStr.getBytes();
+              DiameterIdentity mmeName = new DiameterIdentityImpl(mme);
 
               int natureOfAddressIndicator = 4;
               String locationNumberAddressDigits= "819203961904";
@@ -791,7 +794,7 @@ public class TestPsiServerMan extends TesterBase implements TestPsiServerManMBea
 
             if (requestedInfo.getMsClassmark()) {
               if (requestedInfo.getRequestedDomain() == null || requestedInfo.getRequestedDomain() == DomainType.csDomain) {
-                byte[] classmark = {48, 48, 51};
+                byte[] classmark = {57, 58, 82};
                 msClassmark2 = mapProvider.getMAPParameterFactory().createMSClassmark2(classmark);
               } else {
                 byte[] mSNetworkCapabilityB = hexStringToByteArray("3130303032303331");

@@ -38,7 +38,7 @@ public interface TestLcsServerManMBean {
 
     void onProvideSubscriberLocationRequest(ProvideSubscriberLocationRequest provideSubscriberLocationRequest);
 
-    String performSubscriberLocationReportRequest();
+    String performSubscriberLocationReportRequest(Boolean refNum);
 
 
     /** Attributes **/

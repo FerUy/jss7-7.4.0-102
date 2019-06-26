@@ -1,9 +1,12 @@
-package org.mobicents.protocols.ss7.tools.simulator.tests.lcs;
+package org.mobicents.protocols.ss7.map.api.service.lsm;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class EllipsoidPoint {
 
-    double latitude;
-    double longitude;
+    protected double latitude;
+    protected double longitude;
 
     public EllipsoidPoint(double latitude, double longitude) {
         this.latitude = latitude;

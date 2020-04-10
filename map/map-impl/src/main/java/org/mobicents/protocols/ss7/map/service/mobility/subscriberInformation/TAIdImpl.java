@@ -88,9 +88,9 @@ public class TAIdImpl extends OctetStringBase implements TAId {
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
-            throw new MAPException("IOException when decoding RoutingAreaId: " + e.getMessage(), e);
+            throw new MAPException("IOException when decoding TrackingAreaId: " + e.getMessage(), e);
         } catch (MAPParsingComponentException e) {
-            throw new MAPException("MAPParsingComponentException when decoding RoutingAreaId: " + e.getMessage(), e);
+            throw new MAPException("MAPParsingComponentException when decoding TrackingAreaId: " + e.getMessage(), e);
         }
 
         if (res.length() < 5 || res.length() > 6)
@@ -113,9 +113,9 @@ public class TAIdImpl extends OctetStringBase implements TAId {
         try {
             res = TbcdString.decodeString(ansIS, 3);
         } catch (IOException e) {
-            throw new MAPException("IOException when decoding RoutingAreaId: " + e.getMessage(), e);
+            throw new MAPException("IOException when decoding TrackingAreaId: " + e.getMessage(), e);
         } catch (MAPParsingComponentException e) {
-            throw new MAPException("MAPParsingComponentException when decoding RoutingAreaId: " + e.getMessage(), e);
+            throw new MAPException("MAPParsingComponentException when decoding TrackingAreaId: " + e.getMessage(), e);
         }
 
         if (res.length() < 5 || res.length() > 6)
@@ -136,10 +136,10 @@ public class TAIdImpl extends OctetStringBase implements TAId {
         if (data == null)
             throw new MAPException("Data must not be empty");
         if (data.length != 5)
-            throw new MAPException("Data length must be equal 5");
+            throw new MAPException("Data length must be equal to 5");
 
-        int rac = (data[3] & 0xFF) * 256 + (data[3] & 0xFF);
-        return rac;
+        int tac = (data[3] & 0xFF) * 256 + (data[4] & 0xFF);
+        return tac;
     }
 
     @Override

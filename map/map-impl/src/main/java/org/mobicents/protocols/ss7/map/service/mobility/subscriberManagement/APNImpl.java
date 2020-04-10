@@ -89,7 +89,7 @@ public class APNImpl extends OctetStringBase implements APN {
         while (true) {
             int len = (data[i1++] & 0xFF);
             if (len > data.length - i1)
-                throw new MAPException("Can not decode: read length byte has a value more then left byte count: " + len);
+                throw new MAPException("Can not decode: read length byte has a value more than left byte count: " + len);
 
             byte[] bb = new byte[len];
             System.arraycopy(data, i1, bb, 0, len);

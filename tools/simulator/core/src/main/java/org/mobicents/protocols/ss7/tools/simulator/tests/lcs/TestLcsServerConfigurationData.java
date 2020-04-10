@@ -103,7 +103,7 @@ public class TestLcsServerConfigurationData {
   private String hgmlcAddress = "200.10.0.1";
   private Integer mcc = 748;
   private Integer mnc = 01;
-  private Integer lac = 79010;
+  private Integer lac = 10207;
   private Integer cellId = 222;
   private Integer lcsReferenceNumber = 1;
   private LCSEvent lcsEvent = LCSEvent.emergencyCallOrigination;
@@ -128,7 +128,7 @@ public class TestLcsServerConfigurationData {
   {
     try {
       locationEstimate = new ExtGeographicalInformationImpl(typeOfShape, latitude, longitude, uncertainty, uncertaintySemiMajorAxis,
-          uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
+              uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, altitude, uncertaintyAltitude, innerRadius, uncertaintyRadius, offsetAngle, includedAngle);
     } catch (MAPException e) {
       e.printStackTrace();
     }

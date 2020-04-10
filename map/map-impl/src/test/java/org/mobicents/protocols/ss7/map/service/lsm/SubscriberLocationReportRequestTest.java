@@ -193,8 +193,8 @@ public class SubscriberLocationReportRequestTest {
         SLRArgExtensionContainerImpl slrArgExtensionContainer = new SLRArgExtensionContainerImpl(null, slrArgPcsExtensions);
         AddGeographicalInformationImpl addLocationEstimate = new AddGeographicalInformationImpl(
                 getDataAddGeographicalInformation());
-        DeferredLocationEventTypeImpl deferredLocationEventType = new DeferredLocationEventTypeImpl(true, false, false, false, false);
-        // boolean msAvailable, boolean enteringIntoArea, boolean leavingFromArea, boolean beingInsideArea
+        DeferredLocationEventTypeImpl deferredLocationEventType = new DeferredLocationEventTypeImpl(true, false, false, false, true);
+        // boolean msAvailable, boolean enteringIntoArea, boolean leavingFromArea, boolean beingInsideArea, boolean periodicLDR
         DeferredmtlrDataImpl deferredmtlrData = new DeferredmtlrDataImpl(deferredLocationEventType, null, lcsLocationInfo);
         PositioningDataInformationImpl geranPositioningData = new PositioningDataInformationImpl(
                 getPositioningDataInformation());

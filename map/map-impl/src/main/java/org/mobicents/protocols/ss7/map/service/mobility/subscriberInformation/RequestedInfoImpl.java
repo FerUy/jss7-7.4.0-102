@@ -41,7 +41,7 @@ import org.mobicents.protocols.ss7.map.primitives.MAPExtensionContainerImpl;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
 
@@ -92,30 +92,6 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
      * @param imei
      * @param msClassmark
      * @param mnpRequestedInfo
-     */
-    public RequestedInfoImpl(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
-                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo) {
-        super();
-        this.locationInformation = locationInformation;
-        this.subscriberState = subscriberState;
-        this.extensionContainer = extensionContainer;
-        this.currentLocation = currentLocation;
-        this.requestedDomain = requestedDomain;
-        this.imei = imei;
-        this.msClassmark = msClassmark;
-        this.mnpRequestedInfo = mnpRequestedInfo;
-        this.locationInformationEPSSupported = true;
-    }
-
-    /**
-     * @param locationInformation
-     * @param subscriberState
-     * @param extensionContainer
-     * @param currentLocation
-     * @param requestedDomain
-     * @param imei
-     * @param msClassmark
-     * @param mnpRequestedInfo
      * @param locationInformationEPSSupported
      */
     public RequestedInfoImpl(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
@@ -141,15 +117,15 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
      * @param imei
      * @param msClassmark
      * @param mnpRequestedInfo
-     * @param locationInformationEPSSupported
      * @param tadsData
      * @param requestedNodes
      * @param servingNodeIndication
+     * @param locationInformationEPSSupported
      * @param localTimeZoneRequest
      */
     public RequestedInfoImpl(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
-                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported,
-                             boolean tadsData, RequestedServingNode requestedNodes, boolean servingNodeIndication, boolean localTimeZoneRequest) {
+                             DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo, boolean tadsData, RequestedServingNode requestedNodes,
+                             boolean servingNodeIndication, boolean locationInformationEPSSupported, boolean localTimeZoneRequest) {
         this.locationInformation = locationInformation;
         this.subscriberState = subscriberState;
         this.extensionContainer = extensionContainer;
@@ -474,57 +450,14 @@ public class RequestedInfoImpl implements RequestedInfo, MAPAsnPrimitive {
         }
 
         try {
-            if (this.tadsData) {
-                asnOs.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_tadsData);
-            }
-
-        } catch (IOException e) {
-            throw new MAPException("IOException when encoding parameter tadsData: ", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding parameter tadsData: ", e);
-        }
-
-        try {
-            if (this.requestedNodes != null) {
-                asnOs.writeBoolean(Tag.CLASS_CONTEXT_SPECIFIC, _ID_requestedNodes, this.requestedNodes.getMmeAndSgsn());
-            }
-        } catch (IOException e) {
-            throw new MAPException("IOException when encoding parameter requestedNodes: ", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding parameter requestedNodes: ", e);
-        }
-
-        try {
-            if (this.servingNodeIndication) {
-                asnOs.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_servingNodeIndication);
-            }
-
-        } catch (IOException e) {
-            throw new MAPException("IOException when encoding parameter servingNodeIndication: ", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding parameter servingNodeIndication: ", e);
-        }
-
-        try {
             if (this.locationInformationEPSSupported) {
                 asnOs.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_locationInformationEPSSupported);
             }
 
-        } catch (IOException e) {
-            throw new MAPException("IOException when encoding parameter locationInformationEPSSupported: ", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding parameter locationInformationEPSSupported: ", e);
-        }
-
-        try {
-            if (this.localTimeZoneRequest) {
-                asnOs.writeNull(Tag.CLASS_CONTEXT_SPECIFIC, _ID_localTimeZoneRequest);
-            }
-
-        } catch (IOException e) {
-            throw new MAPException("IOException when encoding parameter localTimeZoneRequest: ", e);
-        } catch (AsnException e) {
-            throw new MAPException("AsnException when encoding parameter localTimeZoneRequest: ", e);
+        } catch (IOException liesIoe) {
+            throw new MAPException("IOException when encoding parameter locationInformationEPSSupported: ", liesIoe);
+        } catch (AsnException liesAsne) {
+            throw new MAPException("AsnException when encoding parameter locationInformationEPSSupported: ", liesAsne);
         }
     }
 

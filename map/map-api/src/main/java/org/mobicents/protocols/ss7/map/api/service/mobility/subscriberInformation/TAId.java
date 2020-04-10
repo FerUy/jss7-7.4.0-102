@@ -49,4 +49,3 @@ public interface TAId extends Serializable {
     int getTAC() throws MAPException;
 
 }
-

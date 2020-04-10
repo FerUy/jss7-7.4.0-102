@@ -33,6 +33,7 @@ import java.io.Serializable;
  * with a return error cause of unexpected data value.
  *
  * @author amit bhayani
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface DeferredLocationEventType extends Serializable {
 

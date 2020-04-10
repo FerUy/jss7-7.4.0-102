@@ -402,7 +402,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultProblemType;
  *
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public interface MAPParameterFactory {
 
@@ -800,14 +800,14 @@ public interface MAPParameterFactory {
     MNPInfoRes createMNPInfoRes(RouteingNumber routeingNumber, IMSI imsi, ISDNAddressString msisdn,
             NumberPortabilityStatus numberPortabilityStatus, MAPExtensionContainer extensionContainer);
 
-    RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState,
-            MAPExtensionContainer extensionContainer, boolean currentLocation, DomainType requestedDomain, boolean imei,
-            boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported);
+    RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer,
+                                      boolean currentLocation, DomainType requestedDomain, boolean imei, boolean msClassmark,
+                                      boolean mnpRequestedInfo, boolean locationInformationEPSSupported);
 
-    RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer, boolean currentLocation,
-                                      DomainType requestedDomain, boolean imei, boolean msClassmark, boolean mnpRequestedInfo,
-                                      boolean locationInformationEPSSupported, boolean tadsData, RequestedServingNode requestedServingNode,
-                                      boolean servingNodeIndication, boolean localTimeZoneRequest);
+    RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState, MAPExtensionContainer extensionContainer,
+                                      boolean currentLocation, DomainType requestedDomain, boolean imei, boolean msClassmark,
+                                      boolean mnpRequestedInfo, boolean locationInformationEPSSupported, boolean tadsData,
+                                      RequestedServingNode requestedServingNode, boolean servingNodeIndication, boolean localTimeZoneRequest);
 
     RouteingNumber createRouteingNumber(String data);
 
@@ -857,8 +857,8 @@ public interface MAPParameterFactory {
 
     Area createArea(AreaType areaType, AreaIdentification areaIdentification);
 
-    DeferredLocationEventType createDeferredLocationEventType(boolean msAvailable, boolean enteringIntoArea,
-            boolean leavingFromArea, boolean beingInsideArea, boolean periodicLDR);
+    DeferredLocationEventType createDeferredLocationEventType(boolean msAvailable, boolean enteringIntoArea, boolean leavingFromArea,
+                                                              boolean beingInsideArea, boolean periodicLDR);
 
     DeferredmtlrData createDeferredmtlrData(DeferredLocationEventType deferredLocationEventType,
             TerminationCause terminationCause, LCSLocationInfo lcsLocationInfo);
@@ -882,6 +882,9 @@ public interface MAPParameterFactory {
 
     ExtGeographicalInformation createExtGeographicalInformation_EllipsoidPoint(double latitude, double longitude)
             throws MAPException;
+
+    ExtGeographicalInformation createExtGeographicalInformation_Polygon(int numberOfPoints, Object polygon)
+        throws MAPException;
 
     GeranGANSSpositioningData createGeranGANSSpositioningData(byte[] data);
 

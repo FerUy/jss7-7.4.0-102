@@ -21,6 +21,8 @@
 
 package org.mobicents.protocols.ss7.tools.simulator.tests.lcs;
 
+import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
+import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.map.api.MAPApplicationContext;
 import org.mobicents.protocols.ss7.map.api.MAPApplicationContextName;
 import org.mobicents.protocols.ss7.map.api.MAPApplicationContextVersion;
@@ -65,6 +67,7 @@ import org.mobicents.protocols.ss7.map.api.service.lsm.LCSEvent;
 import org.mobicents.protocols.ss7.map.api.service.lsm.ExtGeographicalInformation;
 import org.mobicents.protocols.ss7.map.api.service.lsm.DeferredmtlrData;
 import org.mobicents.protocols.ss7.map.api.service.lsm.AccuracyFulfilmentIndicator;
+import org.mobicents.protocols.ss7.map.api.service.lsm.Polygon;
 import org.mobicents.protocols.ss7.map.api.service.lsm.ReportingPLMNList;
 import org.mobicents.protocols.ss7.map.api.service.lsm.LCSClientType;
 import org.mobicents.protocols.ss7.map.api.service.lsm.LCSClientExternalID;
@@ -93,13 +96,13 @@ import org.mobicents.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocation
 import org.mobicents.protocols.ss7.map.api.service.lsm.ProvideSubscriberLocationResponse;
 import org.mobicents.protocols.ss7.map.api.service.lsm.SubscriberLocationReportRequest;
 import org.mobicents.protocols.ss7.map.api.service.lsm.SubscriberLocationReportResponse;
-import org.mobicents.protocols.ss7.map.api.service.lsm.Polygon;
 
 import org.mobicents.protocols.ss7.map.api.service.lsm.VelocityType;
 import org.mobicents.protocols.ss7.map.api.service.mobility.locationManagement.SupportedLCSCapabilitySets;
 import org.mobicents.protocols.ss7.map.api.service.mobility.subscriberInformation.TypeOfShape;
 import org.mobicents.protocols.ss7.map.api.service.mobility.subscriberManagement.APN;
 import org.mobicents.protocols.ss7.map.datacoding.CBSDataCodingSchemeImpl;
+import org.mobicents.protocols.ss7.map.errors.MAPErrorMessageFacilityNotSupImpl;
 import org.mobicents.protocols.ss7.map.errors.MAPErrorMessageUnauthorizedLCSClientImpl;
 import org.mobicents.protocols.ss7.map.primitives.ISDNAddressStringImpl;
 import org.mobicents.protocols.ss7.map.primitives.CellGlobalIdOrServiceAreaIdFixedLengthImpl;
@@ -117,6 +120,7 @@ import org.mobicents.protocols.ss7.map.service.lsm.AddGeographicalInformationImp
 import org.mobicents.protocols.ss7.map.service.lsm.DeferredLocationEventTypeImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.ExtGeographicalInformationImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.LCSClientNameImpl;
+import org.mobicents.protocols.ss7.map.service.lsm.PolygonImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.PositioningDataInformationImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.VelocityEstimateImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.DeferredmtlrDataImpl;
@@ -128,10 +132,14 @@ import org.mobicents.protocols.ss7.map.service.lsm.LCSPrivacyCheckImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.UtranPositioningDataInfoImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.GeranGANSSpositioningDataImpl;
 import org.mobicents.protocols.ss7.map.service.lsm.UtranGANSSpositioningDataImpl;
-import org.mobicents.protocols.ss7.map.service.lsm.PolygonImpl;
 
 import org.mobicents.protocols.ss7.map.service.mobility.locationManagement.SupportedLCSCapabilitySetsImpl;
 import org.mobicents.protocols.ss7.map.service.mobility.subscriberManagement.APNImpl;
+import org.mobicents.protocols.ss7.sccp.impl.parameter.ParameterFactoryImpl;
+import org.mobicents.protocols.ss7.sccp.parameter.EncodingScheme;
+import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
+import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
+import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.asn.ProblemImpl;
 import org.mobicents.protocols.ss7.tcap.asn.comp.InvokeProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
@@ -262,6 +270,11 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             createSRIforLCSReqData(curDialog.getLocalDialogId(), sendRoutingInforForLCSRequest.getMLCNumber(),
                 sendRoutingInforForLCSRequest.getTargetMS()), Level.INFO);
 
+        Random rand = new Random();
+
+        // Set Calling SCCP Address (HLR for SRILCS response)
+        curDialog.setLocalAddress(getHLRSCCPAddress("598991700001"));
+
         String subId = null;
         // Generate MAP errors for specific MSISDNs
         if (sendRoutingInforForLCSRequest.getTargetMS().getMSISDN() != null)
@@ -302,22 +315,51 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             ISDNAddressString msisdnAddress = new ISDNAddressStringImpl(AddressNature.international_number,
                 org.mobicents.protocols.ss7.map.api.primitives.NumberingPlan.ISDN, "59899077937");
             SubscriberIdentity msisdn = new SubscriberIdentityImpl(msisdnAddress);
-            IMSI imsiStr = new IMSIImpl("748026871012345");
-            SubscriberIdentity imsi = new SubscriberIdentityImpl(imsiStr);
-            SubscriberIdentity targetMS = null;
+            IMSI imsiImpl;
+            SubscriberIdentity imsi, targetMS = null;
             if (sendRoutingInforForLCSRequest.getTargetMS().getIMSI() != null)
                 targetMS = msisdn;
-            if (sendRoutingInforForLCSRequest.getTargetMS().getMSISDN() != null)
+            if (sendRoutingInforForLCSRequest.getTargetMS().getMSISDN() != null) {
+                msisdnAddress = sendRoutingInforForLCSRequest.getTargetMS().getMSISDN();
+                if (msisdnAddress.getAddress().equals("60196229802"))
+                    imsiImpl = new IMSIImpl("502153207655206");
+                 else if (msisdnAddress.getAddress().equals("60196229803"))
+                    imsiImpl = new IMSIImpl("502153100826899");
+                else if (msisdnAddress.getAddress().equals("60196229804"))
+                    imsiImpl = new IMSIImpl("502153147968442");
+                else
+                    imsiImpl = new IMSIImpl("748026871012345");
+                imsi = new SubscriberIdentityImpl(imsiImpl);
                 targetMS = imsi;
+            }
             ISDNAddressString mlcNumber = sendRoutingInforForLCSRequest.getMLCNumber();
-            String mscAddress = "5982123007";
-            String sgsnAddress = "5982123009";
+            String mscAddress = "598991800024";
+            String sgsnAddress = "598992000077";
             ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                 NumberingPlan.ISDN, mscAddress);
             ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
                 NumberingPlan.ISDN, sgsnAddress);
             AdditionalNumber additionalNumber = new AdditionalNumberImpl(mscNumber, sgsnNumber);
-            byte[] lmsiByte = {50, 57, 49, 53};
+            byte[] lmsiByte = null;
+            int lmsiRandom = rand.nextInt(4) + 1;
+            switch (lmsiRandom) {
+                case 1:
+                    // ﻿char packet_bytes[] = {0x72, 0x02, 0xe9, 0x8c};
+                    lmsiByte = new byte[]{114, 2, (byte) 233, (byte) 140};
+                    break;
+                case 2:
+                    // ﻿char packet_bytes[] = {﻿0x71, 0xff, 0xac, 0xce};
+                    lmsiByte = new byte[]{113, (byte) 255, (byte) 172, (byte) 206};
+                    break;
+                case 3:
+                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xeb, 0x37};
+                    lmsiByte = new byte[]{114, 2, (byte) 235, 55};
+                    break;
+                case 4:
+                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xe7, 0xd5};
+                    lmsiByte = new byte[]{114, 2, (byte) 231, (byte) 213};
+                    break;
+            }
             LMSI lmsi = new LMSIImpl(lmsiByte);
             Boolean gprsNodeIndicator = false;
             boolean lcsCapabilitySetRelease98_99 = true;
@@ -440,6 +482,10 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         //this.countMapLcsReq++; this was already increased on previous onSendRoutingInfoForLCSRequest
 
         MAPDialogLsm curDialog = provideSubscriberLocationRequest.getMAPDialog();
+        long invokeId = provideSubscriberLocationRequest.getInvokeId();
+
+        // Set Calling SCCP Address (MSC for PSL response)
+        curDialog.setLocalAddress(getMSCSCCPAddress("598991800024"));
 
         MAPParameterFactoryImpl mapFactory = new MAPParameterFactoryImpl();
         int cbsDataCodingSchemeCode = 15;
@@ -470,13 +516,48 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         IMEI imei;
         Integer lcsReferenceNumber = null;
 
+        if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153207655206")) {
+            try {
+                Thread.sleep(15000);
+                return;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153100826899")) {
+            InvokeProblemType invokeProblemType = InvokeProblemType.ResourceLimitation;
+            Problem problem = new ProblemImpl();
+            problem.setInvokeProblemType(invokeProblemType);
+            try {
+                curDialog.sendRejectComponent(invokeId, problem);
+                curDialog.close(false);
+            } catch (MAPException e) {
+                e.printStackTrace();
+            }
+            logger.debug("\nRejectComponent sent");
+            this.testerHost.sendNotif(SOURCE_NAME, "Sent: RejectComponent",
+                createPSLResponse(curDialog.getLocalDialogId(), null, null), Level.INFO);
+            return;
+        } else if (provideSubscriberLocationRequest.getIMSI().getData().equals("502153147968442")) {
+            MAPErrorMessage mapErrorMessage1 = new MAPErrorMessageFacilityNotSupImpl();
+            try {
+                curDialog.sendErrorComponent(invokeId, mapErrorMessage1);
+                curDialog.close(false);
+            } catch (MAPException e) {
+                e.printStackTrace();
+            }
+            logger.debug("\nErrorComponent sent");
+            this.testerHost.sendNotif(SOURCE_NAME, "Sent: ErrorComponent",
+                createPSLResponse(curDialog.getLocalDialogId(), null, null), Level.INFO);
+            return;
+        }
+
         Random rand = new Random();
 
         if (provideSubscriberLocationRequest.getLCSClientID() == null) {
             String clientName = "545248";
             LCSClientName lcsClientName = new LCSClientNameImpl(cbsDataCodingScheme, ussdString, lcsFormatIndicator);
             AddressString lcsClientDialedByMS = new AddressStringImpl(AddressNature.international_number, NumberingPlan.ISDN, clientName);
-            String apnStr = "beconnected.com";
+            String apnStr = "restcomm.org";
             APN lcsAPN = null;
             try {
                 lcsAPN = new APNImpl(apnStr);
@@ -579,9 +660,9 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
         else
             saiPresent = true; // set saiPresent to true if this ATI request is odd since test started
         ISDNAddressString mscNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-            NumberingPlan.ISDN, "598990192837");
+            NumberingPlan.ISDN, "598991800024");
         ISDNAddressString sgsnNumber = new ISDNAddressStringImpl(AddressNature.international_number,
-            NumberingPlan.ISDN, "598990192837");
+            NumberingPlan.ISDN, "598992000077");
         byte[] utranData = {57, 51, 51, 54, 48, 49};
         UtranPositioningDataInfo utranPositioningDataInfo = new UtranPositioningDataInfoImpl(utranData);
         AccuracyFulfilmentIndicator accuracyFulfilmentIndicator = AccuracyFulfilmentIndicator.requestedAccuracyFulfilled;
@@ -720,35 +801,35 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
             /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};   */
             byte[] polygonData1 = { 83,
-                41, (byte) 234, (byte) 138, 55, 67, 17,
-                41, (byte) 234, (byte) 136, 55, 67, 3,
-                41, (byte) 234, 0, 55, 67, 24};
+                                    41, (byte) 234, (byte) 138, 55, 67, 17,
+                                    41, (byte) 234, (byte) 136, 55, 67, 3,
+                                    41, (byte) 234, 0, 55, 67, 24};
 
             /*  char packet_bytes[] = { 0x53, 0x29, 0xea, 0x8a, 0x37, 0x43, 0x11, 0x29, 0xea, 0x88, 0x37, 0x43, 0x03, 0x29, 0xea, 0x00, 0x37, 0x43, 0x18};  */
             byte[] polygonData2 = { 83,
-                44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                44, 29, (byte) 190, 53, (byte) 227, 123};
+                                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                    44, 29, (byte) 190, 53, (byte) 227, 123};
 
             /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
             byte[] polygonData3 = { 83,
-                36, (byte) 167, 60, 52, 37, 0,
-                36, (byte) 167, 49, 52, 36, (byte) 255,
-                36, (byte) 167, 50, 52, 37, 0};
+                                    36, (byte) 167, 60, 52, 37, 0,
+                                    36, (byte) 167, 49, 52, 36, (byte) 255,
+                                    36, (byte) 167, 50, 52, 37, 0};
 
             /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
             byte[] polygonData4 = { 83,
-                36, 124, (byte) 163, 59, 49, 112,
-                36, 126, 7, 59, 49, (byte) 138,
-                36, 127, (byte) 224, 59, 49, 72};
+                                    36, 124, (byte) 163, 59, 49, 112,
+                                    36, 126, 7, 59, 49, (byte) 138,
+                                    36, 127, (byte) 224, 59, 49, 72};
 
             /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
                                         0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
             byte[] polygonData5 = { 84,
-                37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                37, (byte) 230, 64, 52, 67, 124,
-                37, (byte) 230, (byte) 131, 52, 67, 121,
-                37, (byte) 230, (byte) 132, 52, 67, 125};
+                                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                    37, (byte) 230, 64, 52, 67, 124,
+                                    37, (byte) 230, (byte) 131, 52, 67, 121,
+                                    37, (byte) 230, (byte) 132, 52, 67, 125};
 
             Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
 
@@ -814,7 +895,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 locationEstimate, lcsReferenceNumber), Level.INFO);
 
         } catch (MAPException me) {
-            logger.debug("Failed building  ProvideSubscriberLocation response " + me.toString());
+            logger.debug("Exception on addProvideSubscriberLocationResponse " + me.toString());
         }
     }
 
@@ -1041,7 +1122,26 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             // SLR TC-user optional parameters
             IMEI imei = mapParameterFactory.createIMEI(getIMEI());
 
-            byte[] lmsiByte = {50, 57, 49, 53};
+            byte[] lmsiByte = null;
+            int lmsiRandom = rand.nextInt(4) + 1;
+            switch (lmsiRandom) {
+                case 1:
+                    // ﻿char packet_bytes[] = {0x72, 0x02, 0xe9, 0x8c};
+                    lmsiByte = new byte[]{114, 2, (byte) 233, (byte) 140};
+                    break;
+                case 2:
+                    // ﻿char packet_bytes[] = {﻿0x71, 0xff, 0xac, 0xce};
+                    lmsiByte = new byte[]{113, (byte) 255, (byte) 172, (byte) 206};
+                    break;
+                case 3:
+                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xeb, 0x37};
+                    lmsiByte = new byte[]{114, 2, (byte) 235, 55};
+                    break;
+                case 4:
+                    // ﻿char packet_bytes[] = {﻿0x72, 0x02, 0xe7, 0xd5};
+                    lmsiByte = new byte[]{114, 2, (byte) 231, (byte) 213};
+                    break;
+            }
             LMSI lmsi = new LMSIImpl(lmsiByte);
 
             // LSR Conditional parameters
@@ -1168,35 +1268,35 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
                 /*  char packet_bytes[] = { 0x53, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x66, 0xef, 0x35, 0x73, 0x8e};   */
                 byte[] polygonData1 = { 83,
-                    39, 101, (byte) 230, 53, 114, (byte) 185,
-                    39, 101, (byte) 230, 53, 114, (byte) 185,
-                    39, 102, (byte) 239, 53, 115, (byte) 142};
+                                        39, 101, (byte) 230, 53, 114, (byte) 185,
+                                        39, 101, (byte) 230, 53, 114, (byte) 185,
+                                        39, 102, (byte) 239, 53, 115, (byte) 142};
 
                 /*  char packet_bytes[] = { 0x53, 0x2c, 0x1d, 0xbc, 0x35, 0xe3, 0x87, 0x2c,0x1d, 0xc1, 0x35, 0xe3, 0x82, 0x2c, 0x1d, 0xbe, 0x35, 0xe3, 0x7b};  */
                 byte[] polygonData2 = { 83,
-                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                        44, 29, (byte) 190, 53, (byte) 227, 123};
 
                 /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
                 byte[] polygonData3 = { 83,
-                    36, (byte) 167, 60, 52, 37, 0,
-                    36, (byte) 167, 49, 52, 36, (byte) 255,
-                    36, (byte) 167, 50, 52, 37, 0};
+                                        36, (byte) 167, 60, 52, 37, 0,
+                                        36, (byte) 167, 49, 52, 36, (byte) 255,
+                                        36, (byte) 167, 50, 52, 37, 0};
 
                 /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
                 byte[] polygonData4 = { 83,
-                    36, 124, (byte) 163, 59, 49, 112,
-                    36, 126, 7, 59, 49, (byte) 138,
-                    36, 127, (byte) 224, 59, 49, 72};
+                                        36, 124, (byte) 163, 59, 49, 112,
+                                        36, 126, 7, 59, 49, (byte) 138,
+                                        36, 127, (byte) 224, 59, 49, 72};
 
                 /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
                                             0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
                 byte[] polygonData5 = { 84,
-                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                    37, (byte) 230, 64, 52, 67, 124,
-                    37, (byte) 230, (byte) 131, 52, 67, 121,
-                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                        37, (byte) 230, 64, 52, 67, 124,
+                                        37, (byte) 230, (byte) 131, 52, 67, 121,
+                                        37, (byte) 230, (byte) 132, 52, 67, 125};
 
                 Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
 
@@ -1327,7 +1427,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception " + e.toString();
+            return "Exception on addSubscriberLocationReportRequest: " + e.toString();
         }
 
         return "subscriberLocationReportRequest sent";
@@ -1406,11 +1506,13 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 ellipsoidPoint6, ellipsoidPoint7, ellipsoidPoint8, ellipsoidPoint9, ellipsoidPoint10 = null,
                 ellipsoidPoint11, ellipsoidPoint12, ellipsoidPoint13, ellipsoidPoint14, ellipsoidPoint15 = null;
             int typeOfShapeRandomOption = rand.nextInt(6) + 1;
+            // = -34.870059;
+            // = -56.000217;
             switch (typeOfShapeRandomOption) {
                 case 1:
                     typeOfShape = TypeOfShape.EllipsoidPoint;
-                    latitude = 34.789123;
-                    longitude = -124.902033;
+                    latitude = -34.810259;
+                    longitude = -56.000217;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPoint(latitude, longitude);
                     } catch (MAPException e) {
@@ -1419,8 +1521,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 2:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyCircle;
-                    latitude = 51.123002;
-                    longitude = -102.108732;
+                    latitude = -34.801052;
+                    longitude = -56.000219;
                     uncertainty = 5.1;
                     try {
                         locationEstimate = mapParameterFactory.createExtGeographicalInformation_EllipsoidPointWithUncertaintyCircle(latitude, longitude, uncertainty);
@@ -1430,8 +1532,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 3:
                     typeOfShape = TypeOfShape.EllipsoidPointWithUncertaintyEllipse;
-                    latitude = 31.234108;
-                    longitude = -87.700000;
+                    latitude = -34.322357;
+                    longitude = -56.000322;
                     uncertaintySemiMajorAxis = 35.0;
                     uncertaintySemiMinorAxis = 33.0;
                     angleOfMajorAxis = 100.0; // orientation of major axis
@@ -1445,8 +1547,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 4:
                     typeOfShape = TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid;
-                    latitude = 45.907010;
-                    longitude = -99.000239;
+                    latitude = -34.778123;
+                    longitude = -56.001014;
                     altitude = 570;
                     uncertaintySemiMajorAxis = 25.4;
                     uncertaintySemiMinorAxis = 12.1;
@@ -1462,8 +1564,8 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                     break;
                 case 5:
                     typeOfShape = TypeOfShape.EllipsoidArc;
-                    latitude = 45.907010;
-                    longitude = -99.000239;
+                    latitude = -34.100017;
+                    longitude = -56.000441;
                     innerRadius = 5;
                     uncertaintyRadius = 1.50;
                     offsetAngle = 20.0;
@@ -1513,35 +1615,35 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
 
                 /*  char packet_bytes[] = { 0x53, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x65, 0xe6, 0x35, 0x72, 0xb9, 0x27, 0x66, 0xef, 0x35, 0x73, 0x8e};   */
                 byte[] polygonData1 = { 83,
-                    39, 101, (byte) 230, 53, 114, (byte) 185,
-                    39, 101, (byte) 230, 53, 114, (byte) 185,
-                    39, 102, (byte) 239, 53, 115, (byte) 142};
+                                        39, 101, (byte) 230, 53, 114, (byte) 185,
+                                        39, 101, (byte) 230, 53, 114, (byte) 185,
+                                        39, 102, (byte) 239, 53, 115, (byte) 142};
 
                 /*  char packet_bytes[] = { 0x53, 0x2c, 0x1d, 0xbc, 0x35, 0xe3, 0x87, 0x2c,0x1d, 0xc1, 0x35, 0xe3, 0x82, 0x2c, 0x1d, 0xbe, 0x35, 0xe3, 0x7b};  */
                 byte[] polygonData2 = { 83,
-                    44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
-                    44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
-                    44, 29, (byte) 190, 53, (byte) 227, 123};
+                                        44, 29, (byte) 188, 53, (byte) 227, (byte) 135,
+                                        44, 29, (byte) 193, 53, (byte) 227, (byte) 130,
+                                        44, 29, (byte) 190, 53, (byte) 227, 123};
 
                 /* char packet_bytes[] =  { 0x53, 0x24, 0xa7, 0x3c, 0x34, 0x25, 0x00, 0x24, 0xa7, 0x31, 0x34, 0x24, 0xff, 0x24, 0xa7, 0x32,0x34, 0x25, 0x00}; */
                 byte[] polygonData3 = { 83,
-                    36, (byte) 167, 60, 52, 37, 0,
-                    36, (byte) 167, 49, 52, 36, (byte) 255,
-                    36, (byte) 167, 50, 52, 37, 0};
+                                        36, (byte) 167, 60, 52, 37, 0,
+                                        36, (byte) 167, 49, 52, 36, (byte) 255,
+                                        36, (byte) 167, 50, 52, 37, 0};
 
                 /* char packet_bytes[] =  { 0x53, 0x24, 0x7c, 0xa3, 0x3b, 0x31, 0x70, 0x24, 0x7e, 0x07, 0x3b, 0x31, 0x8a, 0x24, 0x7f, 0xe0, 0x3b, 0x31, 0x48}; */
                 byte[] polygonData4 = { 83,
-                    36, 124, (byte) 163, 59, 49, 112,
-                    36, 126, 7, 59, 49, (byte) 138,
-                    36, 127, (byte) 224, 59, 49, 72};
+                                        36, 124, (byte) 163, 59, 49, 112,
+                                        36, 126, 7, 59, 49, (byte) 138,
+                                        36, 127, (byte) 224, 59, 49, 72};
 
                 /* char packet_bytes[] =  { 0x53, 0x25, 0xe5, 0xb3, 0x34, 0x42, 0xd3, 0x25, 0xe6, 0x40, 0x34, 0x43, 0x7c, 0x25, 0xe6, 0x83, 0x34, 0x43, 0x79
                                             0x25, 0xe6, 0x84, 0x34, 0x43, 0x7d};  */
                 byte[] polygonData5 = { 84,
-                    37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
-                    37, (byte) 230, 64, 52, 67, 124,
-                    37, (byte) 230, (byte) 131, 52, 67, 121,
-                    37, (byte) 230, (byte) 132, 52, 67, 125};
+                                        37, (byte) 229, (byte) 179, 52, 66, (byte) 211,
+                                        37, (byte) 230, 64, 52, 67, 124,
+                                        37, (byte) 230, (byte) 131, 52, 67, 121,
+                                        37, (byte) 230, (byte) 132, 52, 67, 125};
 
                 Polygon polygon1, polygon2, polygon3, polygon4, polygon5, polygon6 = new PolygonImpl();
 
@@ -1672,7 +1774,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             currentRequestDef += "Sent SLR Request;";
 
         } catch (MAPException e) {
-            return "Exception " + e.toString();
+            return "Exception on addSubscriberLocationReportRequest: " + e.toString();
         }
 
         return "subscriberLocationReportRequest sent";
@@ -1859,7 +1961,7 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
                 createSLRResData(curDialog.getLocalDialogId(), getNaESRDAddress()), Level.INFO);
 
         } catch (MAPException e) {
-            logger.debug("Failed building response " + e.toString());
+            logger.debug("Exception on addSubscriberLocationReportResponse: " + e.toString());
         }
     }
 
@@ -1871,6 +1973,54 @@ public class TestLcsServerMan extends TesterBase implements TestLcsServerManMBea
             naESRD = subscriberLocationReportResponseIndication.getNaESRD().getAddress();
         this.testerHost.sendNotif(SOURCE_NAME,
             "Rcvd: SubscriberLocationReportResponse", this.createSLRResData(subscriberLocationReportResponseIndication.getInvokeId(), naESRD), Level.INFO);
+    }
+
+    /*
+     * HLR SCCP Address creation
+     */
+    private SccpAddress getHLRSCCPAddress(String address) {
+        ParameterFactory sccpParam = new ParameterFactoryImpl();
+        int translationType = 0; // Translation Type = 0 : Unknown
+        EncodingScheme encodingScheme = null;
+        GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.mobicents.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+        int hlrSsn = 6;
+        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, hlrSsn);
+    }
+
+    /*
+     * VLR SCCP Address creation
+     */
+    private SccpAddress getVLRSCCPAddress(String address) {
+        ParameterFactory sccpParam = new ParameterFactoryImpl();
+        int translationType = 0; // Translation Type = 0 : Unknown
+        EncodingScheme encodingScheme = null;
+        GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.mobicents.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+        int vlrSsn = 7;
+        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, vlrSsn);
+    }
+
+    /*
+     * MSC SCCP Address creation
+     */
+    private SccpAddress getMSCSCCPAddress(String address) {
+        ParameterFactory sccpParam = new ParameterFactoryImpl();
+        int translationType = 0; // Translation Type = 0 : Unknown
+        EncodingScheme encodingScheme = null;
+        GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.mobicents.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+        int mscSsn = 8;
+        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, mscSsn);
+    }
+
+    /*
+     * SGSN SCCP Address creation
+     */
+    private SccpAddress getSGSNSCCPAddress(String address) {
+        ParameterFactory sccpParam = new ParameterFactoryImpl();
+        int translationType = 0; // Translation Type = 0 : Unknown
+        EncodingScheme encodingScheme = null;
+        GlobalTitle gt = sccpParam.createGlobalTitle(address, translationType, org.mobicents.protocols.ss7.indicator.NumberingPlan.ISDN_TELEPHONY, encodingScheme, NatureOfAddress.INTERNATIONAL);
+        int sgsnSsn = 149;
+        return sccpParam.createSccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, gt, translationType, sgsnSsn);
     }
 
     //**********************************************************//

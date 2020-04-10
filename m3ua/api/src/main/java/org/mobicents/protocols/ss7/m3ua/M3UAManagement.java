@@ -94,7 +94,7 @@ public interface M3UAManagement {
     int getHeartbeatTime();
 
     /**
-     * Set the time in milliseconds between two heartbeats. Heartbeat is only sent when MUA association is idle.
+     * Set the time in milliseconds between two heartbeats. Heartbeat is only sent when M3UA association is idle.
      *
      * @param timeBetweenHeartbeat
      */
@@ -138,7 +138,7 @@ public interface M3UAManagement {
     /**
      * Create new {@link As}.
      *
-     * @param asName Unque name of As
+     * @param asName Unique name of As
      * @param functionality {@link Functionality} of this As
      * @param exchangeType {@link ExchangeType} of this As. The handshake mechanism before As is ACTIVE
      * @param ipspType {@link IPSPType} of this As. This is used only if {@link Functionality} is IPSP

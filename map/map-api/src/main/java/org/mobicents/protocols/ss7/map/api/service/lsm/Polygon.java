@@ -14,4 +14,3 @@ public interface Polygon extends Serializable {
     EllipsoidPoint getEllipsoidPoint(int position);
 
 }
-

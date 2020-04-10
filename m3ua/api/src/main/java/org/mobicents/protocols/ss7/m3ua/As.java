@@ -49,7 +49,7 @@ public interface As {
     String getName();
 
     /**
-     * Returns true if atleast one {@link Asp} in this As is ACTIVE and exchanging payload
+     * Returns true if at least one {@link Asp} in this As is ACTIVE and exchanging payload
      *
      * @return
      */
@@ -114,8 +114,8 @@ public interface As {
     TrafficModeType getDefaultTrafficModeType();
 
     /**
-     * The minimu number of {@link Asp} that should be ACTIVE before this As becomes ACTIVE. This value is useful only if
-     * {@link TrafficModeType} is loadshare
+     * The minimum number of {@link Asp} that should be ACTIVE before this As becomes ACTIVE.
+     * This value is useful only if {@link TrafficModeType} is loadshare.
      *
      * @return
      */

@@ -86,6 +86,7 @@ import org.mobicents.protocols.ss7.tools.simulator.tests.psi.TestPsiServerMan;
  * @author sergey vetyutnev
  */
 public class TesterHost extends NotificationBroadcasterSupport implements TesterHostMBean, Stoppable {
+
     private static final Logger logger = Logger.getLogger(TesterHost.class);
 
     private static final String TESTER_HOST_PERSIST_DIR_KEY = "testerhost.persist.dir";

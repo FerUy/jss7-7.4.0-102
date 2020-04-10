@@ -689,7 +689,7 @@ import org.mobicents.protocols.ss7.tcap.asn.TcapFactory;
  *
  * @author amit bhayani
  * @author sergey vetyutnev
- *
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  */
 public class MAPParameterFactoryImpl implements MAPParameterFactory {
 
@@ -1287,10 +1287,10 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
     }
 
     public RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState,
-            MAPExtensionContainer extensionContainer, boolean currentLocation, DomainType requestedDomain, boolean imei,
-            boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported) {
+                                             MAPExtensionContainer extensionContainer, boolean currentLocation, DomainType requestedDomain, boolean imei,
+                                             boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported) {
         return new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer, currentLocation,
-                requestedDomain, imei, msClassmark, mnpRequestedInfo, locationInformationEPSSupported);
+            requestedDomain, imei, msClassmark, mnpRequestedInfo, locationInformationEPSSupported);
     }
 
     public RequestedInfo createRequestedInfo(boolean locationInformation, boolean subscriberState,
@@ -1298,9 +1298,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
                                              boolean msClassmark, boolean mnpRequestedInfo, boolean locationInformationEPSSupported, boolean tadsData,
                                              RequestedServingNode requestedServingNode, boolean servingNodeIndication, boolean localTimeZoneRequest) {
         return new RequestedInfoImpl(locationInformation, subscriberState, extensionContainer, currentLocation, requestedDomain, imei, msClassmark,
-            mnpRequestedInfo, locationInformationEPSSupported, tadsData, requestedServingNode, servingNodeIndication, localTimeZoneRequest);
+            mnpRequestedInfo, tadsData, requestedServingNode, servingNodeIndication, locationInformationEPSSupported, localTimeZoneRequest);
     }
-
 
     public RouteingNumber createRouteingNumber(String data) {
         return new RouteingNumberImpl(data);
@@ -1357,8 +1356,8 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
         return new AreaImpl(areaType, areaIdentification);
     }
 
-    public DeferredLocationEventType createDeferredLocationEventType(boolean msAvailable, boolean enteringIntoArea,
-            boolean leavingFromArea, boolean beingInsideArea, boolean periodicLDR) {
+    public DeferredLocationEventType createDeferredLocationEventType(boolean msAvailable, boolean enteringIntoArea, boolean leavingFromArea,
+                                                                     boolean beingInsideArea, boolean periodicLDR) {
         return new DeferredLocationEventTypeImpl(msAvailable, enteringIntoArea, leavingFromArea, beingInsideArea, periodicLDR);
     }
 
@@ -1684,6 +1683,13 @@ public class MAPParameterFactoryImpl implements MAPParameterFactory {
             int confidence) throws MAPException {
         return new AddGeographicalInformationImpl(TypeOfShape.EllipsoidPointWithUncertaintyEllipse, latitude, longitude, 0,
                 uncertaintySemiMajorAxis, uncertaintySemiMinorAxis, angleOfMajorAxis, confidence, 0, 0, 0, 0, 0, 0);
+    }
+
+    @Override
+    public ExtGeographicalInformation createExtGeographicalInformation_Polygon(int numberOfPoints, Object polygon) throws MAPException {
+        // TODO
+        return new AddGeographicalInformationImpl(TypeOfShape.Polygon, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     @Override

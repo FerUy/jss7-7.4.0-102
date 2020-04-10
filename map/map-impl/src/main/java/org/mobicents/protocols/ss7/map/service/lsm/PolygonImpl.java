@@ -10,6 +10,9 @@ import org.mobicents.protocols.ss7.map.service.mobility.subscriberInformation.Ge
 
 import javax.xml.bind.DatatypeConverter;
 
+/**
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ */
 public class PolygonImpl extends OctetStringBase implements Polygon {
 
     private static final String DEFAULT_VALUE = null;
@@ -102,4 +105,3 @@ public class PolygonImpl extends OctetStringBase implements Polygon {
         }
     };
 }
-

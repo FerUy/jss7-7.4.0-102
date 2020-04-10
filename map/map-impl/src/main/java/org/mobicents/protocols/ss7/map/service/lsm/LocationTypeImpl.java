@@ -43,7 +43,7 @@ import org.mobicents.protocols.ss7.map.primitives.MAPAsnPrimitive;
 public class LocationTypeImpl implements LocationType, MAPAsnPrimitive {
 
     private static final int _TAG_LOCATION_ESTIMATE_TYPE = 0;
-    private static final int _TAG_DEFERRED_LOCATION_EVET_TYPE = 1;
+    private static final int _TAG_DEFERRED_LOCATION_EVENT_TYPE = 1;
 
     public static final String _PrimitiveName = "LocationType";
 
@@ -171,7 +171,7 @@ public class LocationTypeImpl implements LocationType, MAPAsnPrimitive {
 
             if (ais.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                 switch (tag) {
-                    case _TAG_DEFERRED_LOCATION_EVET_TYPE:
+                    case _TAG_DEFERRED_LOCATION_EVENT_TYPE:
                         if (!ais.isTagPrimitive()) {
                             throw new MAPParsingComponentException("Error while decoding " + _PrimitiveName
                                     + ": Parameter [deferredLocationEventType [1] DeferredLocationEventType] is not primitive",
@@ -240,7 +240,7 @@ public class LocationTypeImpl implements LocationType, MAPAsnPrimitive {
 
         if (this.deferredLocationEventType != null) {
             ((DeferredLocationEventTypeImpl) this.deferredLocationEventType).encodeAll(asnOs, Tag.CLASS_CONTEXT_SPECIFIC,
-                    _TAG_DEFERRED_LOCATION_EVET_TYPE);
+                    _TAG_DEFERRED_LOCATION_EVENT_TYPE);
         }
     }
 

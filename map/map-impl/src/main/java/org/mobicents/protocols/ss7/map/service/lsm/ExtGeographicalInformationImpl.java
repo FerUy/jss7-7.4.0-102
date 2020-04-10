@@ -172,7 +172,7 @@ public class ExtGeographicalInformationImpl extends OctetStringBase implements E
     @Override
     public double getUncertainty() {
         if (this.getTypeOfShape() != TypeOfShape.EllipsoidPointWithUncertaintyCircle || this.data == null
-            || this.data.length != 8)
+                || this.data.length != 8)
             return 0;
 
         return GeographicalInformationImpl.decodeUncertainty(this.data[7]);
@@ -266,7 +266,7 @@ public class ExtGeographicalInformationImpl extends OctetStringBase implements E
     @Override
     public int getAltitude() {
         if (this.getTypeOfShape() != TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid || this.data == null
-            || this.data.length != 14)
+                || this.data.length != 14)
             return 0;
 
         int i1 = ((data[7] & 0xFF) << 8) + (data[8] & 0xFF);
@@ -281,7 +281,7 @@ public class ExtGeographicalInformationImpl extends OctetStringBase implements E
     @Override
     public double getUncertaintyAltitude() {
         if (this.getTypeOfShape() != TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid || this.data == null
-            || this.data.length != 14)
+                || this.data.length != 14)
             return 0;
 
         return GeographicalInformationImpl.decodeUncertainty(this.data[12]);
@@ -341,7 +341,7 @@ public class ExtGeographicalInformationImpl extends OctetStringBase implements E
         }
 
         if (this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithUncertaintyEllipse
-            || this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid) {
+                || this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid) {
             sb.append(", UncertaintySemiMajorAxis=");
             sb.append(this.getUncertaintySemiMajorAxis());
 
@@ -375,8 +375,8 @@ public class ExtGeographicalInformationImpl extends OctetStringBase implements E
         }
 
         if (this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithUncertaintyEllipse
-            || this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid
-            || this.getTypeOfShape() == TypeOfShape.EllipsoidArc) {
+                || this.getTypeOfShape() == TypeOfShape.EllipsoidPointWithAltitudeAndUncertaintyEllipsoid
+                || this.getTypeOfShape() == TypeOfShape.EllipsoidArc) {
             sb.append(", Confidence=");
             sb.append(this.getConfidence());
         }

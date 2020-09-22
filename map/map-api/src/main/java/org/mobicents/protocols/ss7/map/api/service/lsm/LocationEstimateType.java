@@ -34,8 +34,8 @@ package org.mobicents.protocols.ss7.map.api.service.lsm;
  */
 public enum LocationEstimateType {
 
-    currentLocation(0), currentOrLastKnownLocation(1), initialLocation(2), activateDeferredLocation(3), cancelDeferredLocation(
-            4);
+    currentLocation(0), currentOrLastKnownLocation(1), initialLocation(2), activateDeferredLocation(3), cancelDeferredLocation(4),
+    notificationVerificationOnly(5);
 
     private final int type;
 
@@ -59,6 +59,8 @@ public enum LocationEstimateType {
                 return activateDeferredLocation;
             case 4:
                 return cancelDeferredLocation;
+            case 5:
+                return notificationVerificationOnly;
             default:
                 return null;
         }

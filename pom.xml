@@ -29,8 +29,8 @@
 		<junit.version>3.8.1</junit.version>
 		<testng.version>6.2</testng.version>
 		<javolution.version>5.5.1</javolution.version>
-		<compiler.plugin.version>2.0.2</compiler.plugin.version>
-		<compile.source>1.5</compile.source>
+		<compiler.plugin.version>3.8.1</compiler.plugin.version>
+		<compile.source>1.8</compile.source>
 		<!-- restcomm but not strictly ss7 -->
 		<asn.version>2.2.0-21</asn.version> <!-- 2.0.3.FINAL,2.1.5 -->
 		<stream.version>1.0.0.CR1</stream.version>
@@ -313,6 +313,20 @@
 				<artifactId>javolution</artifactId>
 				<version>${javolution.version}</version>
 			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -344,7 +358,7 @@
 				<module>docs</module>
 			</modules>
 		</profile>
-		<!--profile>
+		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
 				<property>
@@ -357,6 +371,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -370,7 +385,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>2.1.2</version>
+						<version>3.2.1</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -383,7 +398,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile-->
+		</profile>
 	</profiles>
 	<developers>
 		<developer>
@@ -512,6 +527,21 @@
 					<target>${compile.source}</target>
 					<debug>${compile.debug}</debug>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>

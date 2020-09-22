@@ -24,12 +24,14 @@ package org.mobicents.protocols.ss7.map.api.service.lsm;
 
 /**
  *
- * LocationEstimateType ::= ENUMERATED { currentLocation (0), currentOrLastKnownLocation (1), initialLocation (2), ...,
- * activateDeferredLocation (3), cancelDeferredLocation (4) } -- exception handling: -- a ProvideSubscriberLocation-Arg
- * containing an unrecognized LocationEstimateType -- shall be rejected by the receiver with a return error cause of unexpected
- * data value
+ * LocationEstimateType ::= ENUMERATED { currentLocation (0), currentOrLastKnownLocation (1), initialLocation (2), activateDeferredLocation (3),
+ * cancelDeferredLocation (4), notificationVerificationOnly (5) } }
+ * -- exception handling:
+ * -- a ProvideSubscriberLocation-Arg containing an unrecognized LocationEstimateType
+ * -- shall be rejected by the receiver with a return error cause of unexpected data value
  *
  * @author amit bhayani
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
 public enum LocationEstimateType {

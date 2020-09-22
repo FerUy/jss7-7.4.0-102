@@ -40,6 +40,7 @@ public class LocationEstimateTypeEnumerated extends EnumeratedBase {
         intMap.put(LocationEstimateType.currentOrLastKnownLocation.getType(), LocationEstimateType.currentOrLastKnownLocation.toString());
         intMap.put(LocationEstimateType.initialLocation.getType(), LocationEstimateType.initialLocation.toString());
         intMap.put(LocationEstimateType.activateDeferredLocation.getType(), LocationEstimateType.activateDeferredLocation.toString());
+        intMap.put(LocationEstimateType.activateDeferredLocation.getType(), LocationEstimateType.cancelDeferredLocation.toString());
         intMap.put(LocationEstimateType.cancelDeferredLocation.getType(), LocationEstimateType.notificationVerificationOnly.toString());
 
         stringMap.put(LocationEstimateType.currentLocation.toString(), LocationEstimateType.currentLocation.getType());
